@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1090232821907",
+    "firebase_url": "https://passwordmanager-d5c28-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "passwordmanager-d5c28",
+    "storage_bucket": "passwordmanager-d5c28.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1090232821907:android:c334357e48d49602510566",
+        "android_client_info": {
+          "package_name": "com.finalproject.passmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1090232821907-tbvq3g18shi3bc7afvq585hipkjcdec1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC80rQPOQxDyLaQkv1WS7P_MJ0YrCwxmAs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1090232821907-tbvq3g18shi3bc7afvq585hipkjcdec1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

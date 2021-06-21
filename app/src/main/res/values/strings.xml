@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">PassManager</string>
+    <string name="final_app_name">Password Notes</string>
+    <string name="add_item">Add Item</string>
+    <string name="title_home">My Vault</string>
+    <string name="pass_generator">Password Generator</string>
+    <string name="settings">Settings</string>
+    <string name="edit_item">Edit Item</string>
+    <string name="item_info">Item Information</string>
+    <string name="register_user">Register</string>
+    <string name="login_user">Login</string>
+    <string name="password_list">My Vault</string>
+    <string name="generated_pass">Generated password will be shown here</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

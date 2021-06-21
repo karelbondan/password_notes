@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_home"
+        android:icon="@drawable/ic_lock"
+        app:iconTint="@color/white"
+        android:title="My Vault" />
+    <item
+        android:id="@+id/nav_generator"
+        android:icon="@drawable/ic_refresh"
+        app:iconTint="@color/white"
+        android:title="Password Generator" />
+    <item
+        android:id="@+id/nav_account"
+        android:icon="@drawable/ic_settings"
+        app:iconTint="@color/white"
+        android:title="Settings" />
+</menu>

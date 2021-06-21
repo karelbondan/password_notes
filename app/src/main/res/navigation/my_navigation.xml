@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/my_navigation"
+    app:startDestination="@id/passwordList">
+
+    <activity
+        android:id="@+id/passwordList"
+        android:name="com.finalproject.passmanager.fragment.PasswordList"
+        android:label="activity_password_list"
+        tools:layout="@layout/activity_password_list" />
+    <fragment
+        android:id="@+id/passwordGenerator"
+        android:name="com.finalproject.passmanager.fragment.Generator"
+        android:label="fragment_password_generator"
+        tools:layout="@layout/fragment_password_generator" />
+    <fragment
+        android:id="@+id/accountSection"
+        android:name="com.finalproject.passmanager.fragment.Account"
+        android:label="fragment_account_section"
+        tools:layout="@layout/fragment_account_section" />
+</navigation>
