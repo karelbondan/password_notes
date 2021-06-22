@@ -143,7 +143,7 @@ public class Register extends AppCompatActivity {
             return;
         }
 
-        if (password_check.length() <= 6) {
+        if (password_check.length() < 6) {
             pass.setError("Password length must be equal or greater than 6 characters");
             pass.requestFocus();
             return;
@@ -176,57 +176,42 @@ public class Register extends AppCompatActivity {
                                 @Override
                                 public void onComplete(@NonNull @org.jetbrains.annotations.NotNull Task<Void> task) {
                                     if (task.isSuccessful()) {
-                                        progressDialog.dismiss();
-                                        pass.setVisibility(View.VISIBLE);
-                                        email.setVisibility(View.VISIBLE);
-                                        pass.setEnabled(true);
-                                        email.setEnabled(true);
-                                        reg.setVisibility(View.VISIBLE);
-                                        Toast.makeText(Register.this, email_check + " has been registered. Please check your inbox to continue with the registration", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(Register.this, email_check + " has been registered. " +
+                                                "Please check your inbox to continue with the registration", Toast.LENGTH_SHORT).show();
                                         FirebaseAuth.getInstance().getCurrentUser().sendEmailVerification();
                                         mAuth.signOut();
                                         finish();
                                     } else {
-                                        progressDialog.dismiss();
-                                        pass.setVisibility(View.VISIBLE);
-                                        email.setVisibility(View.VISIBLE);
-                                        pass.setEnabled(true);
-                                        email.setEnabled(true);
-                                        reg.setVisibility(View.VISIBLE);
-                                        Toast.makeText(Register.this, "Failed to register " + email_check + ". Please try again", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(Register.this, "Failed to register " + email_check +
+                                                ". Please try again", Toast.LENGTH_SHORT).show();
                                     }
+                                    progressDialog.dismiss();
+                                    pass.setVisibility(View.VISIBLE);
+                                    email.setVisibility(View.VISIBLE);
+                                    pass.setEnabled(true);
+                                    email.setEnabled(true);
+                                    reg.setVisibility(View.VISIBLE);
                                 }
                             });
                         } else {
                             try {
                                 throw task.getException();
                             } catch (FirebaseAuthInvalidCredentialsException malFormed) {
-                                progressDialog.dismiss();
-                                pass.setVisibility(View.VISIBLE);
-                                email.setVisibility(View.VISIBLE);
-                                pass.setEnabled(true);
-                                email.setEnabled(true);
-                                reg.setVisibility(View.VISIBLE);
-                                Toast.makeText(Register.this, "Invalid email or password", Toast.LENGTH_SHORT).show();
-
+                                Toast.makeText(Register.this, "Invalid email or password",
+                                        Toast.LENGTH_SHORT).show();
                             } catch (FirebaseAuthUserCollisionException existEmail) {
-                                progressDialog.dismiss();
-                                pass.setVisibility(View.VISIBLE);
-                                email.setVisibility(View.VISIBLE);
-                                pass.setEnabled(true);
-                                email.setEnabled(true);
-                                reg.setVisibility(View.VISIBLE);
-                                Toast.makeText(Register.this, "Email already registered. Please login or use another email", Toast.LENGTH_SHORT).show();
-
+                                Toast.makeText(Register.this, "Email already registered. " +
+                                        "Please login or use another email", Toast.LENGTH_SHORT).show();
                             } catch (Exception e) {
-                                progressDialog.dismiss();
-                                pass.setVisibility(View.VISIBLE);
-                                email.setVisibility(View.VISIBLE);
-                                pass.setEnabled(true);
-                                email.setEnabled(true);
-                                reg.setVisibility(View.VISIBLE);
-                                Toast.makeText(Register.this, "Register failed. Please try again", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(Register.this, "Register failed. Please try again",
+                                        Toast.LENGTH_SHORT).show();
                             }
+                            progressDialog.dismiss();
+                            pass.setVisibility(View.VISIBLE);
+                            email.setVisibility(View.VISIBLE);
+                            pass.setEnabled(true);
+                            email.setEnabled(true);
+                            reg.setVisibility(View.VISIBLE);
                         }
                     }
                 });
