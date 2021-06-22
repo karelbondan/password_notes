@@ -26,7 +26,7 @@ import java.util.List;
 
 public class PasswordAdapter extends RecyclerView.Adapter<PasswordAdapter.MyViewHolder> {
 
-    List<Password> passwords;
+    ArrayList<Password> passwords;
     Context context;
 
     public PasswordAdapter(ArrayList<Password> passwords, Context context) {
@@ -74,13 +74,6 @@ public class PasswordAdapter extends RecyclerView.Adapter<PasswordAdapter.MyView
                 holder.itemname.setTextColor(context.getResources().getColor(R.color.black));
                 break;
         }
-
-//        holder.parentbutton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Toast.makeText(context, "you clicked this", Toast.LENGTH_SHORT).show();
-//            }
-//        });
     }
 
     @Override
