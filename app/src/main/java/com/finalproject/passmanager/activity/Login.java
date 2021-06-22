@@ -53,6 +53,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
         progressDialog = new ProgressDialog(this);
 
+        // initializing the toolbar and action bar elements
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitleTextColor(getResources().getColor(R.color.white));
@@ -62,15 +63,28 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_person);
 
+        // initializing the buttons and necessary components which will later be used
         logo = findViewById(R.id.iv_logo_login);
         email = findViewById(R.id.tv_email_login);
         password = findViewById(R.id.tv_password_login);
         login = findViewById(R.id.bt_login_login);
+
+        /*
+        setOnClickListener means that when the button is clicked, it will do something.
+        'this' passed as an parameter means that 'this' contains the information
+        about what to do after the button has been clicked. The overridden 'onClick' method
+        below defines it. I did not use the interface 'onClickListener' directly on the function
+        call to avoid repetition and keep the code clean.
+        */
         login.setOnClickListener(this);
 
         register = findViewById(R.id.bt_register_main);
         register.setOnClickListener(this);
 
+        /*
+        setOnCheckedChangeListener means that the button is a toggle button. It can return true or false
+        (checked or not) depending on the current state of the button.
+        */
         visibility = findViewById(R.id.btn_toggle_passvisibility_login);
         visibility.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -83,6 +97,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             }
         });
 
+        // switch case for light Android theme and dark Android theme
         switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
             case Configuration.UI_MODE_NIGHT_YES:
                 register.setTextColor(getResources().getColor(R.color.white));
@@ -130,6 +145,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             return;
         }
 
+        /*
+        If all of the above statements are passed, log in with Firebase authentication. Set the email and
+        password fields to be disabled so the keyboard does not block the log in process. It will re-enable
+        the fields again after it has successfully logged the user in or when it fails to log the user in.
+        A progress dialog (loading) will be shown in the process of logging the user in (progressDialog).
+        If it fails to log the user in, it will catch the exception thrown by the task.
+        */
         email.setEnabled(false);
         password.setEnabled(false);
         authentication.signInWithEmailAndPassword(email_login, password_login).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
@@ -168,6 +190,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
         });
     }
 
+    // gets called when the back button on the navigation bar is pressed
     @Override
     public void onBackPressed() {
         if (backPressedTime + 2000 > System.currentTimeMillis()) {
@@ -179,16 +202,5 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             back.show();
         }
         backPressedTime = System.currentTimeMillis();
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == android.R.id.home) {
-            finish();
-        }
-        if (item.getItemId() == R.id.cancel) {
-            finish();
-        }
-        return true;
     }
 }
