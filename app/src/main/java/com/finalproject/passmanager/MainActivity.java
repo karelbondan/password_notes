@@ -83,26 +83,13 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction().replace(R.id.container_fragment, new PasswordList()).commit();
         }
-
-        OrientationEventListener a = new OrientationEventListener(this) {
-            @Override
-            public void onOrientationChanged(int orientation) {
-                setRequireVerify(false);
-            }
-        };
     }
 
     private Runnable check_timeout = new Runnable() {
         @Override
         public void run() {
             SharedPreferences sharedPreferences = getApplicationContext().getSharedPreferences("UserPref", Context.MODE_PRIVATE);
-//            Toast.makeText(MainActivity.this, String.valueOf(sharedPreferences.getInt("timeout", 6)), Toast.LENGTH_SHORT).show();
-//            Toast.makeText(MainActivity.this, String.valueOf(System.currentTimeMillis()), Toast.LENGTH_SHORT).show();
-////            Toast.makeText(MainActivity.this, String.valueOf(getStart()), Toast.LENGTH_SHORT).show();
-//            Toast.makeText(MainActivity.this, String.valueOf(getEnd()), Toast.LENGTH_SHORT).show();
             if (timeouts_value[sharedPreferences.getInt("timeout", 6)] != getTimeout()) {
-//                Toast.makeText(MainActivity.this, "value changed from " + String.valueOf(getTimeout()) + " -> "
-//                        + String.valueOf(timeouts_value[sharedPreferences.getInt("timeout", 6)]), Toast.LENGTH_SHORT).show();
                 setTimeout(timeouts_value[sharedPreferences.getInt("timeout", 6)]);
                 setEnd(System.currentTimeMillis() + getTimeout());
             }
@@ -152,21 +139,21 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        handler.removeCallbacks(verify);
-        MainActivity.setRequireVerify(true);
-    }
-
-    @Override
     public void onPause() {
         if (getTimeout() == 999 && isRequireVerify()) {
             Intent intent = new Intent(MainActivity.this, VerifyPassword.class);
             startActivity(intent);
             finish();
         }
-        MainActivity.setRequireVerify(true);
+        setRequireVerify(true);
         super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        handler.removeCallbacks(verify);
+        setRequireVerify(true);
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener navigation = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -201,6 +188,4 @@ public class MainActivity extends AppCompatActivity implements LifecycleObserver
         }
         backPressedTime = System.currentTimeMillis();
     }
-
-
 }
