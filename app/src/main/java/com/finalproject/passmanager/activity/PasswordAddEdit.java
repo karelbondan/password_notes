@@ -17,6 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.finalproject.passmanager.MainActivity;
 import com.finalproject.passmanager.R;
 import com.finalproject.passmanager.model.Password;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -46,7 +47,6 @@ public class PasswordAddEdit extends AppCompatActivity {
     private DatabaseReference databaseReference;
     private Password passwordEdit;
     private ToggleButton visibility;
-    private final Handler timeout_handler = new Handler();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,22 @@ public class PasswordAddEdit extends AppCompatActivity {
         note = findViewById(R.id.tv_note_add_edit);
 
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("passwords");
+        databaseReference = database.getReference("Users")
+                        .child(FirebaseAuth.getInstance()
+                        .getCurrentUser().getUid())
+                        .child("passwords");
+
+        visibility = findViewById(R.id.btn_toggle_passvisibility_addedit);
+        visibility.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
+                } else {
+                    password.setTransformationMethod(PasswordTransformationMethod.getInstance());
+                }
+            }
+        });
 
         Intent getintent = getIntent();
         activity = getintent.getStringExtra("activity");
@@ -94,18 +109,6 @@ public class PasswordAddEdit extends AppCompatActivity {
                 }
             });
 
-            visibility = findViewById(R.id.btn_toggle_passvisibility_addedit);
-            visibility.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    if (isChecked) {
-                        password.setTransformationMethod(HideReturnsTransformationMethod.getInstance());
-                    } else {
-                        password.setTransformationMethod(PasswordTransformationMethod.getInstance());
-                    }
-                }
-            });
-
             confirm = findViewById(R.id.confirm_add);
             confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -115,10 +118,6 @@ public class PasswordAddEdit extends AppCompatActivity {
                         itemname.setError("Must be at least one letter");
                         itemname.requestFocus();
                     } else {
-//                        Passwords update_pass = new Passwords(id, itemname.getText().toString(), username.getText().toString(),
-//                                password.getText().toString(), urlink.getText().toString(), note.getText().toString(),
-//                                Passwords.getItemDate(), Passwords.getItemTime());
-
                         Map<String, Object> update_pass = new HashMap<>();
                         update_pass.put("itemName", itemname.getText().toString());
                         update_pass.put("userName", username.getText().toString());
@@ -132,18 +131,21 @@ public class PasswordAddEdit extends AppCompatActivity {
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void unused) {
-                                        Toast.makeText(PasswordAddEdit.this, "Entry updated successfully", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(PasswordAddEdit.this,
+                                                "Entry updated successfully",
+                                                Toast.LENGTH_SHORT).show();
                                         finish();
                                     }
                                 })
                                 .addOnFailureListener(new OnFailureListener() {
                                     @Override
                                     public void onFailure(@NonNull @NotNull Exception e) {
-                                        Toast.makeText(PasswordAddEdit.this, "Failed to update entry. Please try again", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(PasswordAddEdit.this,
+                                                "Failed to update entry. Please try again",
+                                                Toast.LENGTH_SHORT).show();
                                     }
                                 });
                     }
-//                    finish();
                 }
             });
 
@@ -157,8 +159,8 @@ public class PasswordAddEdit extends AppCompatActivity {
             confirm.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // add to database, if success then finish else throw error message
 
+                    // add to database, if success then finish else throw error message
                     String itemname_check = itemname.getText().toString().trim();
                     if (itemname_check.isEmpty()) {
                         itemname.setError("Must be at least one letter");
@@ -168,25 +170,38 @@ public class PasswordAddEdit extends AppCompatActivity {
                     addItem();
                 }
             });
-
         }
     }
 
     private void addItem() {
         String id = FirebaseDatabase.getInstance().getReference("Users")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("passwords").push().getKey();
-        Password pass = new Password(id, itemname.getText().toString().trim(), username.getText().toString().trim(), password.getText().toString().trim(), urlink.getText().toString().trim(), note.getText().toString().trim(), Password.getItemDate(), Password.getItemTime());
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("passwords").push().getKey();
+        Password pass = new Password(
+                id,
+                itemname.getText().toString().trim(),
+                username.getText().toString().trim(),
+                password.getText().toString().trim(),
+                urlink.getText().toString().trim(),
+                note.getText().toString().trim(),
+                Password.getItemDate(),
+                Password.getItemTime()
+        );
         FirebaseDatabase.getInstance().getReference("Users")
-                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("passwords").child(id).setValue(pass).addOnSuccessListener(new OnSuccessListener<Void>() {
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                .child("passwords").child(id).setValue(pass)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void avoid) {
-                Toast.makeText(PasswordAddEdit.this, "Entry added", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PasswordAddEdit.this, "Entry added",
+                        Toast.LENGTH_SHORT).show();
                 finish();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull @NotNull Exception e) {
-                Toast.makeText(PasswordAddEdit.this, "Failed to add entry. Please try again", Toast.LENGTH_SHORT).show();
+                Toast.makeText(PasswordAddEdit.this,
+                        "Failed to add entry. Please try again", Toast.LENGTH_SHORT).show();
             }
         });
     }

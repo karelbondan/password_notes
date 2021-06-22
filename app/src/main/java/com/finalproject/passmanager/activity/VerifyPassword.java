@@ -87,7 +87,9 @@ public class VerifyPassword extends AppCompatActivity {
                     progressDialog.setMessage("Verifying...");
                     progressDialog.show();
                     enterpassword.setEnabled(false);
-                    authentication.signInWithEmailAndPassword(currentemail.getText().toString().trim(), enterpassword.getText().toString())
+                    authentication.signInWithEmailAndPassword(
+                            currentemail.getText().toString().trim(),
+                            enterpassword.getText().toString())
                             .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull @NotNull Task<AuthResult> task) {
@@ -99,11 +101,15 @@ public class VerifyPassword extends AppCompatActivity {
                                         try {
                                             throw task.getException();
                                         } catch (FirebaseAuthInvalidCredentialsException invalidCredentialsException) {
-                                            Toast.makeText(VerifyPassword.this, "Email and password do not match. Please recheck your credentials", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(VerifyPassword.this,
+                                                    "Email and password do not match. Please recheck your credentials",
+                                                    Toast.LENGTH_SHORT).show();
                                             progressDialog.dismiss();
                                             enterpassword.setEnabled(true);
                                         } catch (Exception e) {
-                                            Toast.makeText(VerifyPassword.this, "Something prevented you from logging in. Please try again", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(VerifyPassword.this,
+                                                    "Something prevented you from logging in. Please try again",
+                                                    Toast.LENGTH_SHORT).show();
                                             progressDialog.dismiss();
                                             enterpassword.setEnabled(true);
                                         }
@@ -111,7 +117,6 @@ public class VerifyPassword extends AppCompatActivity {
                                 }
                             });
                 }
-
             }
         });
 

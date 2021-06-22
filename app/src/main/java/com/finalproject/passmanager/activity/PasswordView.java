@@ -26,6 +26,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.finalproject.passmanager.MainActivity;
 import com.finalproject.passmanager.R;
 import com.finalproject.passmanager.model.Password;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -38,7 +39,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import org.jetbrains.annotations.NotNull;
 
-public class PasswordView extends AppCompatActivity {
+public class PasswordView extends AppCompatActivity implements View.OnClickListener{
 
     private Toolbar toolbar;
     private ActionBar actionBar;
@@ -105,38 +106,9 @@ public class PasswordView extends AppCompatActivity {
                 break;
         }
 
-        username_copy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager copy = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("passmanager username copy", username.getText().toString());
-                copy.setPrimaryClip(clip);
-
-                Toast.makeText(PasswordView.this, "Username copied", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        password_copy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager copy = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("passmanager password copy", password.getText().toString());
-                copy.setPrimaryClip(clip);
-
-                Toast.makeText(PasswordView.this, "Password copied", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-        note_copy.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ClipboardManager copy = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("passmanager note copy", note.getText().toString());
-                copy.setPrimaryClip(clip);
-
-                Toast.makeText(PasswordView.this, "Note copied", Toast.LENGTH_SHORT).show();
-            }
-        });
+        username_copy.setOnClickListener(this);
+        password_copy.setOnClickListener(this);
+        note_copy.setOnClickListener(this);
 
         Intent intent = getIntent();
         activity = intent.getStringExtra("id");
@@ -148,7 +120,6 @@ public class PasswordView extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
                 try {
-                    String datemodif;
                     passwordView = snapshot.getValue(Password.class);
                     name.setText(passwordView.getItemName());
                     username.setText(passwordView.getUserName());
@@ -156,7 +127,7 @@ public class PasswordView extends AppCompatActivity {
                     url.setText(passwordView.getURL());
                     note.setText(passwordView.getNote());
                     datemodified.setText(passwordView.getDate() + " " + passwordView.getTime());
-                } catch (Exception e) {
+                } catch (Exception ignored) {
                 }
             }
 
@@ -195,8 +166,13 @@ public class PasswordView extends AppCompatActivity {
                             databaseReference.child(activity)
                                     .removeValue(new DatabaseReference.CompletionListener() {
                                         @Override
-                                        public void onComplete(@Nullable @org.jetbrains.annotations.Nullable DatabaseError error, @NonNull @NotNull DatabaseReference ref) {
-                                            Toast.makeText(PasswordView.this, "Entry deleted successfully", Toast.LENGTH_SHORT).show();
+                                        public void onComplete(@Nullable
+                                                               @org.jetbrains.annotations.Nullable
+                                                                       DatabaseError error,
+                                                               @NonNull @NotNull DatabaseReference ref) {
+                                            Toast.makeText(PasswordView.this,
+                                                    "Entry deleted successfully",
+                                                    Toast.LENGTH_SHORT).show();
                                             finish();
                                             dialog.cancel();
                                         }
@@ -224,5 +200,30 @@ public class PasswordView extends AppCompatActivity {
             finish();
         }
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.btn_copy_username){
+            ClipboardManager copy = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("passmanager username copy", username.getText().toString());
+            copy.setPrimaryClip(clip);
+
+            Toast.makeText(PasswordView.this, "Username copied", Toast.LENGTH_SHORT).show();
+        }
+        if (v.getId() == R.id.btn_copy_password){
+            ClipboardManager copy = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("passmanager password copy", password.getText().toString());
+            copy.setPrimaryClip(clip);
+
+            Toast.makeText(PasswordView.this, "Password copied", Toast.LENGTH_SHORT).show();
+        }
+        if (v.getId() == R.id.btn_copy_note){
+            ClipboardManager copy = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            ClipData clip = ClipData.newPlainText("passmanager note copy", note.getText().toString());
+            copy.setPrimaryClip(clip);
+
+            Toast.makeText(PasswordView.this, "Note copied", Toast.LENGTH_SHORT).show();
+        }
     }
 }
