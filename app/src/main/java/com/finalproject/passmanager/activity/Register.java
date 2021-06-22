@@ -152,6 +152,7 @@ public class Register extends AppCompatActivity {
         if (!reenterpass_check.equals(password_check)) {
             reenterpass.setError("Passwords do not match");
             reenterpass.requestFocus();
+            return;
         }
 
         progressDialog.setMessage("Registering...");
