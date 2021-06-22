@@ -121,7 +121,6 @@ public class PasswordList extends Fragment implements Filterable {
         Log.d(TAG, "onCreate: " + passwordslist.toString());
 
         return view;
-
     }
 
     @Override
@@ -186,7 +185,8 @@ public class PasswordList extends Fragment implements Filterable {
             } else {
                 String filtertext = constraint.toString().toLowerCase().trim();
                 for (Password pass : passwordsAll) {
-                    if (pass.getItemName().toLowerCase().contains(filtertext) || pass.getUserName().toLowerCase().contains(filtertext)) {
+                    if (pass.getItemName().toLowerCase().contains(filtertext) ||
+                            pass.getUserName().toLowerCase().contains(filtertext)) {
                         filteredPasswords.add(pass);
                     }
                 }
@@ -215,7 +215,8 @@ public class PasswordList extends Fragment implements Filterable {
         progressBar.setVisibility(View.VISIBLE);
 
         database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("Users").child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("passwords");
+        databaseReference = database.getReference("Users")
+                .child(FirebaseAuth.getInstance().getCurrentUser().getUid()).child("passwords");
         databaseReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull @NotNull DataSnapshot snapshot) {
@@ -247,23 +248,5 @@ public class PasswordList extends Fragment implements Filterable {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-
-    // testing method before connecting to firebase
-    private void fillPasswordList() {
-//        Passwords pass1 = new Passwords("Discord", "karelbondan@gmail.com", "amazing1", "https://www.discord.com/", null, getDate(), getTime());
-//        Passwords pass2 = new Passwords("Facebook", "bondanandoro@hotmail.com", "12345", "https://www.facebook.com/", null, getDate(), getTime());
-//        Passwords pass3 = new Passwords("Twitter", "karelbondan@gmail.com", "23i2k32", "https://www.twitter.com", null, getDate(), getTime());
-//        Passwords pass4 = new Passwords("Reddit", "leosagitarius93@gmail.com", "skdjskldj", "https://www.reddit.com", null, getDate(), getTime());
-//        Passwords pass5 = new Passwords("Pinterest", "bondanandoro@hotmail.com", "skdjakld", "https://www.pinterest.com", null, getDate(), getTime());
-//        Passwords pass6 = new Passwords("GoogleMain", "karelbondan@gmail.com", "google", "www.google.com", "this is my google main account", getDate(), getTime());
-//        Passwords pass7 = new Passwords("Discord", "karelbondan@gmail.com", "amazing1", "https://www.discord.com/", null, getDate(), getTime());
-//        Passwords pass8 = new Passwords("Facebook", "bondanandoro@hotmail.com", "12345", "https://www.facebook.com/", null, getDate(), getTime());
-//        Passwords pass9 = new Passwords("Twitter", "karelbondan@gmail.com", "23i2k32", "https://www.twitter.com", null, getDate(), getTime());
-//        Passwords pass10 = new Passwords("Reddit", "leosagitarius93@gmail.com", "skdjskldj", "https://www.reddit.com", null, getDate(), getTime());
-//        Passwords pass11 = new Passwords("Pinterest", "bondanandoro@hotmail.com", "skdjakld", "https://www.pinterest.com", null, getDate(), getTime());
-//        Passwords pass12 = new Passwords("GoogleMain", "karelbondan@gmail.com", "google", "www.google.com", "this is my google main account", getDate(), getTime());
-//        passwordslist.addAll(Arrays.asList(new Passwords[] {pass1, pass2, pass3, pass4, pass5, pass6, pass7, pass8, pass9, pass10, pass11, pass12}));
     }
 }

@@ -8,15 +8,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-
-import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -26,9 +17,16 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.finalproject.passmanager.activity.Login;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+
 import com.finalproject.passmanager.MainActivity;
 import com.finalproject.passmanager.R;
+import com.finalproject.passmanager.activity.Login;
 import com.finalproject.passmanager.activity.VerifyPassword;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -40,7 +38,7 @@ import com.google.firebase.database.FirebaseDatabase;
 
 import org.jetbrains.annotations.NotNull;
 
-public class Account extends Fragment {
+public class Account extends Fragment implements View.OnClickListener{
 
     private Button signout, changepass, delacc, locknow, locktimeout;
     private TextView currentemail, timeout_text, timeout_placeholder;
@@ -49,7 +47,6 @@ public class Account extends Fragment {
     private AppCompatActivity activity;
     private FirebaseAuth auth;
     private DatabaseReference database;
-    private Handler handler;
     private ProgressDialog progressDialog;
     private SharedPreferences sharedPreferences;
     private String[] timeouts = {"1 minute", "5 minutes", "10 minutes", "15 minutes", "20 minutes",
@@ -72,7 +69,6 @@ public class Account extends Fragment {
         sharedPreferences = getActivity().getSharedPreferences("UserPref", Context.MODE_PRIVATE);
         setTimeout_time(sharedPreferences.getInt("timeout", 6));
 
-        handler = new Handler();
         progressDialog = new ProgressDialog(getContext());
 
         toolbar = view.findViewById(R.id.toolbar);
@@ -99,142 +95,11 @@ public class Account extends Fragment {
         auth = FirebaseAuth.getInstance();
         currentemail.setText(auth.getCurrentUser().getEmail());
 
-        locktimeout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
-                builder.setTitle("Choose when to lock the vault");
-                builder.setCancelable(false);
-                builder.setSingleChoiceItems(timeouts, getTimeout_time(), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        setTimeout_time(which);
-                    }
-                }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        setTimeout_time(getTimeout_time());
-                        SharedPreferences.Editor editor = sharedPreferences.edit();
-                        editor.putInt("timeout", getTimeout_time());
-                        editor.commit();
-                        timeout_text.setText(String.valueOf(timeouts[getTimeout_time()]));
-                    }
-                }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                    }
-                });
-                AlertDialog choose_timeout = builder.create();
-                choose_timeout.show();
-
-                Button bt_no_dialog = choose_timeout.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Button bt_yes_dialog = choose_timeout.getButton(DialogInterface.BUTTON_POSITIVE);
-                if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
-                    bt_no_dialog.setTextColor(getResources().getColor(R.color.white));
-                    bt_yes_dialog.setTextColor(getResources().getColor(R.color.white));
-                }
-            }
-        });
-
-        changepass.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().sendPasswordResetEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail())
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull @NotNull Task<Void> task) {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(view.getContext(), "Password reset link has been sent to " +
-                                            FirebaseAuth.getInstance().getCurrentUser().getEmail() +
-                                            ". Please check your inbox", Toast.LENGTH_SHORT).show();
-                                } else {
-                                    Toast.makeText(activity, "An error occurred. Please try again", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-            }
-        });
-
-        signout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseAuth.getInstance().signOut();
-                progressDialog.setMessage("Logging out...");
-                progressDialog.show();
-                Toast.makeText(view.getContext(), "Logged out. Please login again", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(view.getContext(), Login.class);
-                progressDialog.dismiss();
-                MainActivity.setRequireVerify(false);
-                getActivity().finish();
-                startActivity(intent);
-            }
-        });
-
-        delacc.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder dialog_confirm_builder = new AlertDialog.Builder(view.getContext())
-                        .setMessage("Do you really want to delete your account? Once deleted, your account and all of its data won't be recoverable.")
-                        .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                database = FirebaseDatabase.getInstance().getReference("Users");
-                                database.child(auth.getCurrentUser().getUid()).removeValue(new DatabaseReference.CompletionListener() {
-                                    @Override
-                                    public void onComplete(@Nullable @org.jetbrains.annotations.Nullable DatabaseError error, @NonNull @NotNull DatabaseReference ref) {
-                                        Intent intent = new Intent(view.getContext(), Login.class);
-                                        Toast.makeText(view.getContext(), "Deleted account data", Toast.LENGTH_SHORT).show();
-                                        intent.putExtra("activity", "finish");
-                                        MainActivity.setRequireVerify(false);
-                                        getActivity().finish();
-                                        startActivity(intent);
-                                        dialog.cancel();
-                                    }
-                                });
-                                auth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                                    @Override
-                                    public void onComplete(@NonNull @NotNull Task<Void> task) {
-                                        Toast.makeText(view.getContext(), "Deleted account successfully", Toast.LENGTH_SHORT).show();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull @NotNull Exception e) {
-                                        Toast.makeText(view.getContext(), "Account deletion failed. Please try again", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                        }).setNegativeButton("No", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        });
-
-                AlertDialog dialog_confirm = dialog_confirm_builder.create();
-                dialog_confirm.setTitle("Confirmation");
-                dialog_confirm.show();
-
-                Button bt_no_dialog = dialog_confirm.getButton(DialogInterface.BUTTON_NEGATIVE);
-                Button bt_yes_dialog = dialog_confirm.getButton(DialogInterface.BUTTON_POSITIVE);
-                if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
-                    bt_no_dialog.setTextColor(getResources().getColor(R.color.white));
-                    bt_yes_dialog.setTextColor(getResources().getColor(R.color.white));
-                }
-            }
-        });
-
-        locknow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(view.getContext(), VerifyPassword.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                MainActivity.setRequireVerify(false);
-                getActivity().finish();
-                startActivity(intent);
-            }
-        });
-
+        locktimeout.setOnClickListener(this);
+        locknow.setOnClickListener(this);
+        signout.setOnClickListener(this);
+        changepass.setOnClickListener(this);
+        delacc.setOnClickListener(this);
 
         switch (getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) {
             case Configuration.UI_MODE_NIGHT_YES:
@@ -269,10 +134,134 @@ public class Account extends Fragment {
         return true;
     }
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.bt_locktimeout_settings){
+            AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+            builder.setTitle("Choose when to lock the vault");
+            builder.setCancelable(false);
+            builder.setSingleChoiceItems(timeouts, getTimeout_time(), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    setTimeout_time(which);
+                }
+            }).setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    setTimeout_time(getTimeout_time());
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putInt("timeout", getTimeout_time());
+                    editor.commit();
+                    timeout_text.setText(String.valueOf(timeouts[getTimeout_time()]));
+                }
+            }).setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+
+                }
+            });
+            AlertDialog choose_timeout = builder.create();
+            choose_timeout.show();
+
+            Button bt_no_dialog = choose_timeout.getButton(DialogInterface.BUTTON_NEGATIVE);
+            Button bt_yes_dialog = choose_timeout.getButton(DialogInterface.BUTTON_POSITIVE);
+            if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+                bt_no_dialog.setTextColor(getResources().getColor(R.color.white));
+                bt_yes_dialog.setTextColor(getResources().getColor(R.color.white));
+            }
+        }
+        if (v.getId() == R.id.bt_locknow_settings){
+            Intent intent = new Intent(v.getContext(), VerifyPassword.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            MainActivity.setRequireVerify(false);
+            getActivity().finish();
+            startActivity(intent);
+        }
+        if (v.getId() == R.id.bt_signout_settings){
+            FirebaseAuth.getInstance().signOut();
+            progressDialog.setMessage("Logging out...");
+            progressDialog.show();
+            Toast.makeText(v.getContext(), "Logged out. Please login again", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(v.getContext(), Login.class);
+            progressDialog.dismiss();
+            MainActivity.setRequireVerify(false);
+            getActivity().finish();
+            startActivity(intent);
+        }
+        if (v.getId() == R.id.bt_changepass_settings){
+            FirebaseAuth.getInstance()
+                    .sendPasswordResetEmail(FirebaseAuth.getInstance().getCurrentUser().getEmail())
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull @NotNull Task<Void> task) {
+                            if (task.isSuccessful()) {
+                                Toast.makeText(v.getContext(), "Password reset link has been sent to " +
+                                        FirebaseAuth.getInstance().getCurrentUser().getEmail() +
+                                        ". Please check your inbox", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(activity, "An error occurred. Please try again", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    });
+        }
+        if (v.getId() == R.id.bt_deleteaccount_settings){
+            AlertDialog.Builder dialog_confirm_builder = new AlertDialog.Builder(v.getContext())
+                    .setMessage("Do you really want to delete your account? " +
+                            "Once deleted, your account and all of its data won't be recoverable.")
+                    .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            database = FirebaseDatabase.getInstance().getReference("Users");
+                            database.child(auth.getCurrentUser().getUid())
+                                    .removeValue(new DatabaseReference.CompletionListener() {
+                                @Override
+                                public void onComplete(@Nullable @org.jetbrains.annotations.Nullable DatabaseError error,
+                                                       @NonNull @NotNull DatabaseReference ref) {
+                                    Intent intent = new Intent(v.getContext(), Login.class);
+                                    Toast.makeText(v.getContext(), "Deleted account data",
+                                            Toast.LENGTH_SHORT).show();
+                                    intent.putExtra("activity", "finish");
+                                    MainActivity.setRequireVerify(false);
+                                    getActivity().finish();
+                                    startActivity(intent);
+                                    dialog.cancel();
+                                }
+                            });
+                            auth.getCurrentUser().delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull @NotNull Task<Void> task) {
+                                    Toast.makeText(v.getContext(), "Deleted account successfully", Toast.LENGTH_SHORT).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull @NotNull Exception e) {
+                                    Toast.makeText(v.getContext(), "Account deletion failed. Please try again", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }).setNegativeButton("No", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog dialog_confirm = dialog_confirm_builder.create();
+            dialog_confirm.setTitle("Confirmation");
+            dialog_confirm.show();
+
+            Button bt_no_dialog = dialog_confirm.getButton(DialogInterface.BUTTON_NEGATIVE);
+            Button bt_yes_dialog = dialog_confirm.getButton(DialogInterface.BUTTON_POSITIVE);
+            if ((getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES) {
+                bt_no_dialog.setTextColor(getResources().getColor(R.color.white));
+                bt_yes_dialog.setTextColor(getResources().getColor(R.color.white));
+            }
+        }
     }
 }
