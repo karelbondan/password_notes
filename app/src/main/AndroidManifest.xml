@@ -11,6 +11,7 @@
         android:label="@string/final_app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:name=".SecureView"
         android:theme="@style/Theme.PassManager">
         <activity android:name=".activity.VerifyPassword"/>
         <activity android:name=".activity.Login" />
